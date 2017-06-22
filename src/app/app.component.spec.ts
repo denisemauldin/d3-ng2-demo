@@ -30,6 +30,13 @@ class MockChild2Component { }
 })
 class MockChild3Component { }
 
+@Component({
+  selector: 'app-wrapper-timeline',
+  template: `<div></div>`
+})
+class MockChild4Component { }
+
+
 
 describe('App: D3Ng2Demo', () => {
 
@@ -82,5 +89,8 @@ describe('App: D3Ng2Demo', () => {
     expect(fixture.debugElement.query(By.css('app-wrapper-voronoi-spirals-3'))).not.toBeNull('Missing.');
   });
 
+  it(`should contain an 'app-wrapper-timeline' component`, () => {
+    expect(fixture.debugElement.query(By.css('app-wrapper-timeline'))).not.toBeNull('Missing.');
+  });
 
 });
