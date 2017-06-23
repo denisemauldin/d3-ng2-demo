@@ -1,10 +1,10 @@
 /**
- * This component is an adaptation of the "Brush & Zoom II" Example provided by
- * Mike Bostock at https://bl.ocks.org/mbostock/f48fcdb929a620ed97877e4678ab15e6
+ * This component is an adaptation of the "Days Timeline" Example provided by
+ * Denise Mauldin at https://denisemauldin.github.io/d3-timeline/examples/days.html
  */
 
 import { Component, ElementRef, NgZone, OnDestroy, OnInit } from '@angular/core';
-
+import * as Timeline from 'd3-timelines';
 
 import {
   D3Service,
@@ -22,16 +22,46 @@ import {
 
 @Component({
   selector: 'app-timeline',
-  template: '<svg width="960" height="600"></svg>'
+  template: '<svg width="960" height="600"></svg>',
+  styles: [`
+    .axis text {
+	  display: none;
+    }
+    .textlabels {
+      font-size: 12pt;
+      font-family: Helvetica;
+    }
+    .textnumbers {
+      font-size: 18pt;
+      font-family: Helvetica;
+    }
+ `]
 })
 export class TimelineComponent implements OnInit, OnDestroy {
+  //original
   private d3: D3;
   private parentNativeElement: any;
   private d3Svg: Selection<SVGSVGElement, any, null, undefined>;
+  //timeline
+  private host;        // D3 object referencing host dom object
+  private svg;         // SVG in which we will print our chart
+  private margin;      // Space between the svg borders and the actual chart graphic
+  private width;       // Component width
+  private height;      // Component height
+  private xScale;      // D3 scale in X
+  private yScale;      // D3 scale in Y
+  private xAxis;       // D3 X Axis
+  private yAxis;       // D3 Y Axis
+  private colorScale;
+  private htmlElement: HTMLElement; // Host HTMLElement
 
   constructor(element: ElementRef, private ngZone: NgZone, d3Service: D3Service) {
+    // original
     this.d3 = d3Service.getD3();
     this.parentNativeElement = element.nativeElement;
+    // timeline
+    this.htmlElement = element.nativeElement;
+    this.host = this.d3.select(this.htmlElement);
   }
 
   ngOnDestroy() {
@@ -41,6 +71,79 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.setup();
+    this.buildSVG();
+    this.draw();
+  }
+
+  setup() {
+    this.margin = { top: 20, right: 20, bottom: 40, left: 40 };
+    this.width = this.htmlElement.firstElementChild.clientWidth - this.margin.left - this.margin.right;
+    console.log("this.htmlElement", this.htmlElement);
+    console.log("this child element", this.htmlElement.firstElementChild);
+    console.log("this.htmlElement.clientWidth", this.htmlElement.clientWidth);
+    console.log("width is ", this.width);
+    this.height = this.width * 0.5 - this.margin.top - this.margin.bottom;
+  } 
+
+   /* Will build the SVG Element */
+  private buildSVG(): void {
+    this.host.html('');
+    this.svg = this.host.append('svg')
+      .attr('width', this.width + this.margin.left + this.margin.right)
+      .attr('height', this.height + this.margin.top + this.margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+  }
+  
+  private draw(): void {
+    let d3 = this.d3;
+  	let timepoints = [];
+    function timelineHover(svg) {
+    	let width = 500;
+        let colorScale = d3.scaleOrdinal().range(['#ffffff']);
+        let data = [
+          {times:[
+          	{"id": "day1", "label": "DAY", "labelNumber": "1", "starting_time": 1, "ending_time": 86400},
+            {"id": "day2", "label": "DAY", "labelNumber": "2", "starting_time": 86400, "ending_time": 86400*2},
+            {"id": "day3", "label": "DAY", "labelNumber": "3", "starting_time": 86400*2, "ending_time": 86400*3},
+            {"id": "day4", "label": "DAY", "labelNumber": "4", "starting_time": 86400*3, "ending_time": 86400*4},
+            {"id": "day5", "label": "DAY", "labelNumber": "5", "starting_time": 86400*4, "ending_time": 86400*5}
+          ]},
+        ];
+
+		var chart = Timeline.timeline()
+			.linearTime()
+			.itemHeight(60)
+			.labelFloat(25) // move DAY up 25 pixels
+			.itemMargin(0)
+			.colors(colorScale)
+			.showBorderLine()
+			.showBorderFormat({marginTop: 30, marginBottom: 0, width: 3, color: 'black'})
+			.margin({left:10, right:30, top:30, bottom:0})
+			.click(function (d, i, datum, labelElement, rectElement, duration) {
+				var ele = d3.select(rectElement);
+				var labelEle = d3.select(labelElement);
+				rectElement.duration = duration;
+				if (timepoints.includes(rectElement)) {
+					ele.style("fill", "#ffffff");
+					labelEle.style("fill", "#000000");
+					var index = timepoints.indexOf(rectElement);
+					timepoints.splice(index, 1);
+				} else {
+					timepoints.push(rectElement);
+					labelEle.style("fill", "#ffffff");
+					ele.style("fill", "#e2ae79");
+				}
+			})
+			.rotateTicks(45);
+			
+			svg.attr("width", width).datum(data).call(chart);
+		} // end timelineHover    
+		timelineHover(this.svg);
+  } // end draw
+
+  example() {
     let self = this;
     let d3 = this.d3;
     let d3ParentElement: Selection<HTMLElement, any, null, undefined>;
