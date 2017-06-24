@@ -1,0 +1,41 @@
+#!/bin/sh
+
+NAME="d3-ng2-demo"
+DJANGODIR="/var/www/d3-ng2-demo"
+SOCKFILE=/var/www/d3-ng2-demo/run/gunicorn.sock
+USER=vagrant
+GROUP=webapps
+NUM_WORKERS=3
+
+# Set this to 0 for unlimited requests. During development, you might want to
+# set this to 1 to automatically restart the process on each request (i.e. your
+# code will be reloaded on every request).
+MAX_REQUESTS=0
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment.
+cd $DJANGODIR
+. /home/vagrant/.virtualenvs/d3-ng2-demo/bin/activate
+
+# Set additional environment variables.
+. /home/vagrant/.virtualenvs/d3-ng2-demo/bin/postactivate
+
+# Create the run directory if it doesn't exist.
+RUNDIR=$(dirname $SOCKFILE)
+test -d $RUNDIR || mkdir -p $RUNDIR
+
+# Programs meant to be run under supervisor should not daemonize themselves
+# (do not use --daemon).
+exec gunicorn \
+    --name $NAME \
+    --workers $NUM_WORKERS \
+    --max-requests $MAX_REQUESTS \
+    --timeout 300 \
+    --user $USER --group $GROUP \
+    --log-level debug \
+    --bind unix:$SOCKFILE \
+    --pid /var/www/d3-ng2-demo/run/gunicorn.pid \
+    --preload \
+    --env DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE} \
+    config.wsgi

@@ -1,0 +1,77 @@
+django-braces==1.11.0
+djangorestframework==3.6.3
+# django_rest_framework needs a specific commit
+#-e git+https://github.com/rense/djangorestframework-camel-case.git#egg=djangorestframework_camel_case
+-e git+https://github.com/rense/djangorestframework-camel-case.git@f2df1814046885c129d3a47c3c1534663083b139#egg=djangorestframework_camel_case
+django-rest-swagger==2.1.2
+django-filter==1.0.3
+simplejson==3.10.0
+enum34==1.1.2
+Unipath==1.1
+unicodecsv==0.14.1
+django-registration==2.2
+django-localflavor==1.4.1
+
+# Wheel 0.25+ needed to install certain packages on CPython 3.5+
+# like Pillow and psycopg2
+# See http://bitly.com/wheel-building-fails-CPython-35
+# Verified bug on Python 3.5.1
+wheel==0.29.0
+
+# Bleeding edge Django
+django==1.11.1
+
+# Configuration
+django-environ==0.4.3
+whitenoise==3.2.2
+
+
+# Forms
+django-foundation-formtags==0.0.8
+
+# Models
+django-model-utils==3.0
+
+# Images
+Pillow==3.4.2
+
+# For user registration, either via email or social
+# Well-built with regular release cycles!
+django-allauth==0.32.0
+
+
+# Python-PostgreSQL Database Adapter
+psycopg2==2.6.2
+
+# Unicode slugification
+awesome-slugify==1.6.5
+
+# Time zones support
+pytz==2016.10
+
+rcssmin==1.0.6
+django-compressor==2.1.1
+django-libsass==0.7
+
+# Your custom requirements go here
+django-avatar==3.1.0
+django-betterforms==1.1.4
+
+#keep track of model changes
+django-dirtyfields==1.2.1
+
+# testing
+mixer==5.5.6
+
+#google api. Necessary for gmail integration
+google-api-python-client==1.6.2
+
+# Notification library
+pinax-notifications==4.0.0
+
+# Uploaded file mime-types
+python-magic==0.4.13
+
+# For LDAP authentication
+django-python3-ldap==0.10.0
+ldap3==2.2.3
