@@ -4,7 +4,7 @@
  */
 
 import { Component, ElementRef, NgZone, OnDestroy, OnInit } from '@angular/core';
-import * as Timeline from 'd3-timelines';
+import { timeline } from 'd3-timelines';
 
 import {
   D3Service,
@@ -112,7 +112,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           ]},
         ];
 
-		var chart = Timeline.timeline()
+		var chart = timeline()
 			.linearTime()
 			.itemHeight(60)
 			.labelFloat(25) // move DAY up 25 pixels
